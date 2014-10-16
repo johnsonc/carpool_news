@@ -4,7 +4,7 @@ from urlparse import urljoin
 from dateutil.parser import parse
 from scrapy.spider import BaseSpider
 from scrapy.http import Request
-from ride_scraper.items import KasVezaItem
+from ride_scraper.items import RideItem
 
 
 class KasVezaSpider(BaseSpider):
@@ -42,7 +42,7 @@ class KasVezaSpider(BaseSpider):
         # Newest available rides of this route - one page
         rides = response.xpath("//tr[@class='rowlink']")
         for ride in rides:
-            ride_item = KasVezaItem()
+            ride_item = RideItem()
             # Advertisement creation datetime
             creation_time_str = ride.xpath(".//a/text()").extract()[0]
             creation_time_date = parse(creation_time_str)

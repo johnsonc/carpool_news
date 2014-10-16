@@ -8,9 +8,12 @@
 import scrapy
 
 
-class KasVezaItem(scrapy.Item):
-    # Advertisement creation datetime
+class RideItem(scrapy.Item):
+    # Advertisement creation date and time
     creation_time = scrapy.Field()
+
+    # Expected date of the trip
+    ride_date = scrapy.Field()
 
     # Raw advertisement text
     content = scrapy.Field()
