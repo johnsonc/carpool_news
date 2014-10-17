@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 import re
+import arrow
 from urlparse import urljoin
-from dateutil.parser import parse
 from scrapy.spider import BaseSpider
 from scrapy.http import Request
 from ride_scraper.items import RideItem
@@ -62,7 +62,7 @@ class KasVezaSpider(BaseSpider):
                 ride_item = RideItem()
                 # Advertisement creation datetime
                 creation_time_str = ride.xpath(".//a/text()").extract()[0]
-                creation_time_date = parse(creation_time_str)
+                creation_time_date = arrow.get(creation_time_str)
                 ride_item['creation_time'] = creation_time_date
 
                 # Check if ride is being offered or looked for
