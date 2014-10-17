@@ -13,9 +13,10 @@ BOT_NAME = 'ride_scraper'
 SPIDER_MODULES = ['ride_scraper.spiders']
 NEWSPIDER_MODULE = 'ride_scraper.spiders'
 
-ITEM_PIPELINES = [
-    'ride_scraper.pipelines.RideSavingPipeline',
-]
+ITEM_PIPELINES = {
+    'ride_scraper.pipelines.RideSavingPipeline': 1,
+    'ride_scraper.pipelines.SetSourcePipeline': 2,
+}
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = 'ride_scraper (+http://www.yourdomain.com)'

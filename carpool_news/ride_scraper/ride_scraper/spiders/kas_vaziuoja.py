@@ -1,25 +1,26 @@
-# -*- coding: utf8 -*-
+# -*- coding: utf-8 -*-
 import re
 import arrow    # datetime parsing
 from urlparse import urljoin
-from scrapy.spider import BaseSpider
+from scrapy.spider import Spider
 from scrapy.http import Request
 from ride_scraper.items import RideItem
+from rides.models import parsed_ad_id, max_scraped_id
 
 
-class KasVaziuojaSpider(BaseSpider):
+class KasVaziuojaSpider(Spider):
     name = 'kas_vaziuoja'
     start_urls = ['http://www.kasvaziuoja.lt/']
+    # Required - see SetSourcePipeline
+    ad_id_pattern = 'kelione-(?P<id>\d+)'
 
-    def __init__(self, last_scraped_id=None, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(KasVaziuojaSpider, self).__init__(*args, **kwargs)
-        # Limit scraping to these ads which have ID higher than
-        # this parameter.
-        if last_scraped_id:
-            self.last_scraped_id = int(last_scraped_id)
-        else:
-            self.last_scraped_id = 0
-        self.id_pattern = re.compile('kelione-(?P<id>\d+)')
+        # Only scrape newest ads, not yet scraped before
+        id = max_scraped_id(KasVaziuojaSpider.name)
+        if id is None:
+            id = 0
+        self.max_scraped_id = id
 
     # Crawler entry point
     def parse(self, response):
@@ -32,8 +33,8 @@ class KasVaziuojaSpider(BaseSpider):
             ride_url = urljoin(response.url, ride_url)
 
             # Get ad ID and check if it's new and not yet scraped
-            id = self._get_id_from_url(ride_url)
-            if id > self.last_scraped_id:
+            id = parsed_ad_id(ride_url, KasVaziuojaSpider.ad_id_pattern)
+            if id > self.max_scraped_id:
                 ride_item = RideItem()
 
                 # Check if ride is being offered or looked for
@@ -61,7 +62,7 @@ class KasVaziuojaSpider(BaseSpider):
         ride_item['phone'] = fields[last - 2].strip()
         ride_item['ride_date'] = arrow.get(fields[last - 1].strip())
         ride_item['content'] = fields[last].strip()
-        ride_item['site_url'] = response.url
+        ride_item['ad_url'] = response.url
 
         # Parse cities
         route_raw = response.xpath(

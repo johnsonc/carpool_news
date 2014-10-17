@@ -1,25 +1,26 @@
-# -*- coding: utf8 -*-
+# -*- coding: utf-8 -*-
 import re
 import arrow
 from urlparse import urljoin
-from scrapy.spider import BaseSpider
+from scrapy.spider import Spider
 from scrapy.http import Request
 from ride_scraper.items import RideItem
+from rides.models import parsed_ad_id, max_scraped_id
 
 
-class KasVezaSpider(BaseSpider):
+class KasVezaSpider(Spider):
     name = "kas_veza"
     start_urls = ["https://www.kasveza.lt/marsrutai/"]
+    # Required - see SetSourcePipeline
+    ad_id_pattern = 'skelbimas/(?P<id>\d+)'
 
-    def __init__(self, last_scraped_id=None, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(KasVezaSpider, self).__init__(*args, **kwargs)
-        # Limit scraping to these ads which have ID higher than
-        # this parameter.
-        if last_scraped_id:
-            self.last_scraped_id = int(last_scraped_id)
-        else:
-            self.last_scraped_id = 0
-        self.id_pattern = re.compile('skelbimas/(?P<id>\d+)')
+        # Only scrape newest ads, not yet scraped before
+        id = max_scraped_id(KasVezaSpider.name)
+        if id is None:
+            id = 0
+        self.max_scraped_id = id
 
     # Crawler entry point
     def parse(self, response):
@@ -57,8 +58,8 @@ class KasVezaSpider(BaseSpider):
             ride_url = urljoin(response.url, ride_url)
 
             # Check if this ad is new and not yet scraped
-            id = self._get_id_from_url(ride_url)
-            if id > self.last_scraped_id:
+            id = parsed_ad_id(ride_url, KasVezaSpider.ad_id_pattern)
+            if id > self.max_scraped_id:
                 ride_item = RideItem()
                 # Advertisement creation datetime
                 creation_time_str = ride.xpath(".//a/text()").extract()[0]
@@ -81,7 +82,7 @@ class KasVezaSpider(BaseSpider):
             "//div[@class='media-body']/p/a/@href").extract()[0]
         fb_url = fb_url.replace("/redirect?url=", "")
         ride_item['fb_url'] = fb_url
-        ride_item['site_url'] = response.url
+        ride_item['ad_url'] = response.url
 
         # Phone number (optional)
         phone = response.xpath(
