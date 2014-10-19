@@ -13,6 +13,22 @@ class Route(models.Model):
     origin = models.CharField(max_length=255)
     destination = models.CharField(max_length=255)
 
+    @staticmethod
+    def unique_origins():
+        origins = sorted(list(set([
+            route.origin
+            for route in Route.objects.all()
+        ])))
+        return origins
+
+    @staticmethod
+    def unique_destinations():
+        destinations = sorted(list(set([
+            route.destination
+            for route in Route.objects.all()
+        ])))
+        return destinations
+
 
 class Ride(models.Model):
     # Advertisement creation date and time
