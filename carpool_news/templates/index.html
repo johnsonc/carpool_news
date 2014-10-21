@@ -21,10 +21,10 @@
     </head>
     <body>
         <nav class="navbar navbar-inverse">
-            <a class="navbar-brand" href="#">Carpool News</a>
+            <a class="navbar-brand" href="{% url 'index' %}">Carpool News</a>
             <ul class="nav navbar-nav">
                 <li class="active">
-                    <a href="#">Skelbimai</a>
+                    <a href="{% url 'index' %}">Skelbimai</a>
                 </li>
             </ul>
         </nav>
@@ -39,27 +39,32 @@
                         </h3>
                     </div>
                     <div class="panel-body">
-                        <form action="" method="POST" role="form">
+                        <form action="" method="GET" role="form">
+                            <datalist id="city-options">
+                                {% for city in city_options %}
+                                    <option>{{ city }}</option>
+                                {% endfor %}
+                            </datalist>
                             <!-- Origin -->
                             <div class="form-group">
                                 <label for="input-origin" class="control-label" id="label-from">Važiuoja iš:</label>
-                                <input type="text" name="" id="input-origin" class="form-control input-sm" value="" required="required" pattern="" title="">
+                                <input type="text" name="from" id="input-origin" class="form-control input-sm" value="{{ selected_origin }}" required="required" list="city-options" autocomplete="on">
                             </div>
                             <!-- Destination -->
                             <div class="form-group">
                                 <label for="input-origin" class="control-label" id="label-to">Važiuoja į:</label>
-                                <input type="text" name="" id="input-destination" class="form-control input-sm" value="" required="required" pattern="" title="">
+                                <input type="text" name="to" id="input-destination" class="form-control input-sm" value="{{ selected_destination }}" required="required" list="city-options" autocomplete="on">
                             </div>
                             <div class="form-group">
                                 <div class="radio">
                                     <label>
-                                        <input type="radio" name="is-looking-for" id="is-looking-for-true" value="" checked="checked">
+                                        <input type="radio" name="looking-for" id="is-looking-for-true" value="True" {{ selected_looking_for|yesno:'checked="checked",,checked="checked"' }}>
                                         Ieškau
                                     </label>
                                 </div>
                                 <div class="radio">
                                     <label>
-                                        <input type="radio" name="is-looking-for" id="is-looking-for-false" value="" >
+                                        <input type="radio" name="looking-for" id="is-looking-for-false" value="False" {{ selected_looking_for|yesno:',checked="checked",' }}>
                                         Siūlau
                                     </label>
                                 </div>
@@ -73,11 +78,19 @@
             <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Naujausi skelbimai</h3>
+                        <h3 class="panel-title">
+                            {{ search_done|yesno:"Rasti skelbimai,Naujausi skelbimai,Naujausi skelbimai" }}
+                            {% if search_done and rides|length > 0 %}
+                            &nbsp;
+                            <span class="badge">
+                                {{ rides|length }}
+                            </span>
+                            {% endif %}
+                        </h3>
                     </div>
                     <div class="panel-body">
                         <ul class="list-group">
-                            {% for ride in newest_rides %}
+                            {% for ride in rides %}
                             <li class="list-group-item">
                                 {{ ride.content }}
                                 {% if ride.is_looking_for %}

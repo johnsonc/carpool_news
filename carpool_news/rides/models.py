@@ -14,20 +14,16 @@ class Route(models.Model):
     destination = models.CharField(max_length=255)
 
     @staticmethod
-    def unique_origins():
-        origins = sorted(list(set([
-            route.origin
-            for route in Route.objects.all()
+    def unique_cities():
+        unique_cities = sorted(list(set([
+            city
+            for pair in [
+                [route.origin, route.destination]
+                for route in Route.objects.all()
+            ]
+            for city in pair
         ])))
-        return origins
-
-    @staticmethod
-    def unique_destinations():
-        destinations = sorted(list(set([
-            route.destination
-            for route in Route.objects.all()
-        ])))
-        return destinations
+        return unique_cities
 
 
 class Ride(models.Model):

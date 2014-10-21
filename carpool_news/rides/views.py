@@ -4,10 +4,43 @@ from rides.models import Ride, Route
 
 
 def index(request):
-    # Return full list of routes
-    routes = Route.objects.order_by('origin', 'destination')
-    newest_rides = Ride.objects.order_by('-id')[:NEWEST_RIDES]
+    # Search parameters
+    origin = request.GET.get('from')
+    destination = request.GET.get('to')
+    looking_for_str = request.GET.get('looking-for')
+
+    # Convert to boolean
+    if looking_for_str == 'True':
+        looking_for = True
+    elif looking_for_str == 'False':
+        looking_for = False
+    else:
+        looking_for = None
+
+    if origin and destination:
+        search_done = True
+        # Do the search
+        rides = list(set([
+            ride
+            for route in Route.objects.filter(
+                origin=origin,
+                destination=destination)
+            for ride in route.ride_set.filter(
+                is_looking_for=not looking_for)
+        ]))
+    else:
+        search_done = False
+        # Display few newest rides
+        rides = Ride.objects.order_by('-id')[:NEWEST_RIDES]
+        origin = ""
+        destination = ""
+
+    city_options = Route.unique_cities()
     return render(request, 'index.html', {
-        'routes': routes,
-        'newest_rides': newest_rides,
+        'search_done': search_done,
+        'selected_origin': origin,
+        'selected_destination': destination,
+        'selected_looking_for': looking_for,
+        'city_options': city_options,
+        'rides': rides,
     })
