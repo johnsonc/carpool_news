@@ -1,6 +1,7 @@
-from carpool_news.settings import NEWEST_RIDES
+from carpool_news.settings import NEWEST_RIDES, RIDES_PER_PAGE
 from django.shortcuts import render
 from rides.models import Ride, Route
+import math
 
 
 def index(request):
@@ -43,4 +44,6 @@ def index(request):
         'selected_looking_for': looking_for,
         'city_options': city_options,
         'rides': rides,
+        'rides_per_page': RIDES_PER_PAGE,
+        'ride_pages': math.ceil(float(len(rides)) / RIDES_PER_PAGE),
     })

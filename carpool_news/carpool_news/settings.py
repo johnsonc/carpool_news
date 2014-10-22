@@ -36,6 +36,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'djangobower',
     'rides',
 )
 
@@ -92,11 +93,19 @@ STATICFILES_DIRS = (
 )
 
 # Templates
-
 TEMPLATE_PATH = os.path.join(BASE_DIR, 'templates')
-TEMPLATE_DIRS = [
+TEMPLATE_DIRS = (
     TEMPLATE_PATH,
-]
+)
+
+# Bower package manager
+STATICFILES_FINDERS = (
+    'djangobower.finders.BowerFinder',
+)
+BOWER_COMPONENTS_ROOT = os.path.join(BASE_DIR, 'components')
+BOWER_INSTALLED_APPS = (
+    'jquery-bootpag',
+)
 
 # Application settings
 NEWEST_RIDES = 10

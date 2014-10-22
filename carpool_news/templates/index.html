@@ -8,6 +8,7 @@
 
         <!-- Bootstrap CSS -->
         <!-- Flatly theme from bootswatch -->
+        {% load static %}
         <link href="//maxcdn.bootstrapcdn.com/bootswatch/3.2.0/flatly/bootstrap.min.css" rel="stylesheet">
 
         <!-- <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet"> -->
@@ -89,7 +90,7 @@
                         </h3>
                     </div>
                     <div class="panel-body">
-                        <ul class="list-group">
+                        <ul class="list-group" id="ride-list">
                             {% for ride in rides %}
                             <li class="list-group-item">
                                 {{ ride.content }}
@@ -119,6 +120,7 @@
                         </ul>
                     </div>
                 </div>
+                <div id="pagination"></div>
             </div>
         </div>
 
@@ -133,8 +135,12 @@
         <script src="//code.jquery.com/jquery.js"></script>
         <!-- Bootstrap JavaScript -->
         <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+        <!-- Bootstrap pagination plugin -->
+        <script type="text/javascript" src='{% static 'jquery-bootpag/lib/jquery.bootpag.js' %}'></script>
 
         <script type="text/javascript">
+            // Change search field labels according to
+            // selected ad type (looking for a ride or offering one)
             $(document).ready(function() {
                 $('#is-looking-for-true').click(function() {
                     $('#label-from').text("Važiuoja iš:");
@@ -145,6 +151,35 @@
                     $('#label-to').text("Važiuoju į:");
                 });
             });
+
+            // Set up pagination
+            // Variables from server side
+            var totalPages = {{ ride_pages }};
+            var itemsPerPage = {{ rides_per_page }};
+
+            function showPage(num) {
+                // Pages are numbered from 1
+                var pageIdx = num - 1;
+                var showIdxStart = pageIdx * itemsPerPage;
+                var showIdxEnd = (pageIdx + 1) * itemsPerPage - 1;
+                $('#ride-list li.list-group-item').each(function(idx) {
+                    if (idx >= showIdxStart && idx <= showIdxEnd) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            };
+
+            // Enable 'jquery-bootpag' plugin
+            $('#pagination').bootpag({
+                total: {{ ride_pages }},
+            }).on("page", function(event, num) {
+                showPage(num);
+            });
+
+            // Display first page on page load
+            showPage(1);
         </script>
     </body>
 </html>
