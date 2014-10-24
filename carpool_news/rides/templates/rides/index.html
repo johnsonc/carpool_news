@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- LEFT -->
+<div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                Skelbimų paieška
+            </h3>
+        </div>
+        <div class="panel-body">
+            <form action="" method="GET" role="form">
+                <datalist id="city-options">
+                    {% for city in city_options %}
+                        <option>{{ city }}</option>
+                    {% endfor %}
+                </datalist>
+                <!-- Origin -->
+                <div class="form-group">
+                    <label for="input-origin" class="control-label" id="label-from">Važiuoja iš:</label>
+                    <input type="text" name="from" id="input-origin" class="form-control input-sm" value="{{ selected_origin }}" required="required" list="city-options" autocomplete="on">
+                </div>
+                <!-- Destination -->
+                <div class="form-group">
+                    <label for="input-origin" class="control-label" id="label-to">Važiuoja į:</label>
+                    <input type="text" name="to" id="input-destination" class="form-control input-sm" value="{{ selected_destination }}" required="required" list="city-options" autocomplete="on">
+                </div>
+                <div class="form-group">
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="looking-for" id="is-looking-for-true" value="True" {{ selected_looking_for|yesno:'checked="checked",,checked="checked"' }}>
+                            Ieškau
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="looking-for" id="is-looking-for-false" value="False" {{ selected_looking_for|yesno:',checked="checked",' }}>
+                            Siūlau
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Ieškoti</button>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- RIGHT -->
+<div class="col-xs-9 col-sm-9 col-md-9 col-lg-9">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                {{ search_done|yesno:"Rasti skelbimai,Naujausi skelbimai,Naujausi skelbimai" }}
+                {% if search_done and rides|length > 0 %}
+                &nbsp;
+                <span class="badge">
+                    {{ rides|length }}
+                </span>
+                {% endif %}
+            </h3>
+        </div>
+        <div class="panel-body">
+            <ul class="list-group" id="ride-list">
+                {% for ride in rides %}
+                <li class="list-group-item">
+                    {{ ride.content }}
+                    {% if ride.is_looking_for %}
+                        <span class="label label-warning" style="float: right;">
+                            Ieškau
+                        </span>
+                    {% else %}
+                        <span class="label label-success" style="float: right;">
+                            Siūlau
+                        </span>
+                    {% endif %}
+                    <span class="ride-details">
+                        <br>
+                        {% if ride.phone %}
+                            <span class="glyphicon glyphicon-phone-alt">&nbsp;</span>
+                            {{ ride.phone }}
+                            <br>
+                        {% endif %}
+                        <span class="glyphicon glyphicon glyphicon-share-alt">&nbsp;</span>
+                        <a href="{{ ride.ad_url }}">
+                            {{ ride.ad_url }}
+                        </a>
+                    </span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div id="pagination"></div>
+</div>
+{% endblock %}

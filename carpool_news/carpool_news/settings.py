@@ -36,11 +36,14 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'debug_toolbar.apps.DebugToolbarConfig',
     'djangobower',
     'rides',
+    'users',
 )
 
 MIDDLEWARE_CLASSES = (
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -48,6 +51,11 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+)
+
+# Django debug toolbar
+INTERNAL_IPS = (
+    '127.0.0.1',
 )
 
 ROOT_URLCONF = 'carpool_news.urls'
@@ -87,9 +95,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_PATH = os.path.join(BASE_DIR, 'static')
-STATICFILES_DIRS = (
-    STATIC_PATH,
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'djangobower.finders.BowerFinder',
 )
 
 # Templates
@@ -99,9 +110,6 @@ TEMPLATE_DIRS = (
 )
 
 # Bower package manager
-STATICFILES_FINDERS = (
-    'djangobower.finders.BowerFinder',
-)
 BOWER_COMPONENTS_ROOT = os.path.join(BASE_DIR, 'components')
 BOWER_INSTALLED_APPS = (
     'jquery-bootpag',

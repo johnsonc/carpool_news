@@ -37,7 +37,7 @@ def index(request):
         destination = ""
 
     city_options = Route.unique_cities()
-    return render(request, 'index.html', {
+    return render(request, 'rides/index.html', {
         'search_done': search_done,
         'selected_origin': origin,
         'selected_destination': destination,
