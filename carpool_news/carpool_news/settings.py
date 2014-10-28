@@ -115,6 +115,8 @@ BOWER_INSTALLED_APPS = (
     'jquery-bootpag',
 )
 
+LOGIN_URL = '/users/login'
+
 # Application settings
 NEWEST_RIDES = 10
 RIDES_PER_PAGE = 10

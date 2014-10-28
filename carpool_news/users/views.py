@@ -12,13 +12,20 @@ def login(request):
         user = auth.authenticate(username=username, password=password)
         if user:
             auth.login(request, user)
-            return HttpResponseRedirect('/')
+            # login_required decorator redirect
+            if 'next' in request.POST and request.POST['next'] != '':
+                return HttpResponseRedirect(request.POST['next'])
+            else:
+                return HttpResponseRedirect('/')
         else:
             return render(request, 'users/login.html', {
                 'error_message': 'Login failed',
             })
     else:
-        return render(request, 'users/login.html')
+        return render(request, 'users/login.html', {
+            # login_required decorator redirect
+            'next': request.GET['next'] if 'next' in request.GET else '',
+        })
 
 
 @login_required
@@ -49,7 +56,3 @@ def register(request):
         'users/register.html', {
             'form': user_form,
         })
-
-
-def profile(request):
-    return render(request, 'users/profile.html')
