@@ -3,6 +3,7 @@ import django.contrib.auth as auth
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from users.forms import UserForm
+from rides.models import Location
 
 
 def login(request):
@@ -56,3 +57,18 @@ def register(request):
         'users/register.html', {
             'form': user_form,
         })
+
+
+@login_required
+def profile(request):
+    if request.method == 'POST':
+        # TODO: add a new followed route
+        pass
+
+    # TODO: get the followed routes
+    followed_routes = []
+    cities = Location.objects.all()
+    return render(request, 'users/profile.html', {
+        'cities': cities,
+        'followed_routes': followed_routes,
+    })
