@@ -9,21 +9,20 @@ class AdSource(models.Model):
     ad_id_pattern = models.CharField(max_length=255, null=True)
 
 
-class Route(models.Model):
-    origin = models.CharField(max_length=255)
-    destination = models.CharField(max_length=255)
+class Location(models.Model):
+    name = models.CharField(max_length=255)
 
     @staticmethod
-    def unique_cities():
-        unique_cities = sorted(list(set([
-            city
-            for pair in [
-                [route.origin, route.destination]
-                for route in Route.objects.all()
-            ]
-            for city in pair
-        ])))
-        return unique_cities
+    def get_by_name(name):
+        try:
+            return Location.objects.filter(name=name)[0]
+        except:
+            return None
+
+
+class Route(models.Model):
+    origin = models.ForeignKey('Location', related_name='origins')
+    destination = models.ForeignKey('Location', related_name='destinations')
 
 
 class Ride(models.Model):

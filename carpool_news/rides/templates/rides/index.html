@@ -13,7 +13,9 @@
             <form action="" method="GET" role="form">
                 <datalist id="city-options">
                     {% for city in city_options %}
-                        <option>{{ city }}</option>
+                        <option>
+                            {{ city.name }}
+                        </option>
                     {% endfor %}
                 </datalist>
                 <!-- Origin -->
