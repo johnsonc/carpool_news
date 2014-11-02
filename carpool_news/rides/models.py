@@ -1,5 +1,6 @@
 import re
 from django.db import models
+from django.contrib.auth.models import User
 from arrow_field.model_fields import ArrowField
 
 
@@ -19,10 +20,17 @@ class Location(models.Model):
         except:
             return None
 
+    def __unicode__(self):
+        return self.name
+
 
 class Route(models.Model):
     origin = models.ForeignKey('Location', related_name='origins')
     destination = models.ForeignKey('Location', related_name='destinations')
+    users = models.ManyToManyField(
+        User,
+        through='users.UserRoute',
+        related_name='routes')
 
 
 class Ride(models.Model):

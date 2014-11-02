@@ -1,92 +1,62 @@
 {% extends 'base.html' %}
 
+{% load bootstrap3 %}
+
 {% block content %}
-<h3>{{ user.username }} ({{ user.email }})</h3>
-<hr>
-
-<div class="col-sm-6">
-    <h4>Sekami maršrutai:</h4>
-    {% if followed_routes|length > 0 %}
-        {% for route in followed_routes %}
-            {{ route }}
-            <br>
-        {% endfor %}
-    {% else %}
-        Dar nėra. Pridėkite naują!
-    {% endif %}
-</div>
-
-<div class="col-sm-6">
-    <h4>Pridėti naują:</h4>
+    <h3>{{ user.username }} ({{ user.email }})</h3>
     <hr>
-    <form action="" method="POST" class="form-horizontal" role="form">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="id_password" 
-                   class="col-sm-3 control-label">
-                Pradžia:
-            </label>
-            <div class="col-sm-9">
-                <select name="origin"
-                        id="input" 
-                        class="form-control"
-                        required="required">
-                    <option value=""></option>
-                    {% for city in cities %}
-                        <option value="{{ city }}">
-                            {{ city.name }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-        </div>
 
-        <div class="form-group">
-            <label for="id_password" 
-                   class="col-sm-3 control-label">
-                Pabaiga:
-            </label>
-            <div class="col-sm-9">
-                <select name="destination" 
-                        id="input" 
-                        class="form-control"
-                        required="required">
-                    <option value=""></option>
-                    {% for city in cities %}
-                        <option value="{{ city }}">
-                            {{ city.name }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-        </div>
+    <div class="col-sm-6">
+        <h4>Sekami maršrutai:</h4>
+        {% if user_routes|length > 0 %}
+            <ul class="list-group">
+                {% for user_route in user_routes %}
+                <li class="list-group-item">
+                    <form action="{% url 'users:delete_user_route' user_route.id %}" method="POST" role="form">
+                        {% csrf_token %}
 
-        <div class="form-group">
-            <label for="id_password" 
-                   class="col-sm-3 control-label">
-                Tipas:
-            </label>
-            <div class="col-sm-9">
-                <div class="radio">
-                    <label>
-                        <input type="radio" name="ad-type" id="ad-type-searching" value="" checked="checked">
-                        Ieškau
-                    </label>
-                    <br>
-                    <label>
-                        <input type="radio" name="ad-type" id="ad-type-offering" value="">
-                        Siūlau
-                    </label>
+                        {{ user_route.route.origin }}
+                        &nbsp;
+                        {% bootstrap_icon 'arrow-right' %}
+                        &nbsp;
+                        {{ user_route.route.destination }}
+                        &nbsp;
+
+                        {% if user_route.is_looking_for %}
+                            <span class="label label-warning">
+                                Ieško
+                            </span>
+                        {% else %}
+                            <span class="label label-success">
+                                Siūlo
+                            </span>
+                        {% endif %}
+
+                        <button type="submit" class="btn btn-xs btn-danger pull-right">
+                            {% bootstrap_icon 'remove' %}
+                        </button>
+                    </form>
+                </li>
+                {% endfor %}
+            </ul>
+
+        {% else %}
+            Dar nėra. Pridėkite naują!
+        {% endif %}
+    </div>
+
+    <div class="col-sm-6">
+        <h4>Pridėti naują:</h4>
+        <hr>
+        <form action="{% url 'users:create_user_route' %}" method="POST" class="form-horizontal" role="form">
+            {% csrf_token %}
+            {% bootstrap_form form layout='horizontal' %}
+
+            {% buttons %}
+                <div class="col-md-9 col-md-offset-3">
+                    <button type="submit" class="btn btn-primary">Pridėti</button>
                 </div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-sm-9 col-sm-offset-3">
-                <button type="submit" class="btn btn-primary">Pridėti</button>
-            </div>
-        </div>
-    </form>
-</div>
-
+            {% endbuttons %}
+        </form>
+    </div>
 {% endblock %}

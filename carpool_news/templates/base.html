@@ -9,6 +9,12 @@
         <!-- Bootstrap CSS -->
         <!-- Flatly theme from bootswatch -->
         {% load static %}
+
+        <!-- django-bootstrap3 -->
+        {% load bootstrap3 %}
+        {% bootstrap_css %}
+        {% bootstrap_javascript %}
+
         <link href="//maxcdn.bootstrapcdn.com/bootswatch/3.2.0/flatly/bootstrap.min.css" rel="stylesheet">
 
         <!-- <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet"> -->
@@ -33,7 +39,7 @@
             <ul class="nav navbar-nav navbar-right">
                 {% if user.is_authenticated %}
                 <li>
-                    <a href="{% url 'users:profile' %}">
+                    <a href="{% url 'users:list_user_routes' %}">
                         {{ user.username }}
                     </a>
                 </li>

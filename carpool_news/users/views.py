@@ -1,8 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
+from django.core.urlresolvers import reverse
 import django.contrib.auth as auth
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
-from users.forms import UserForm
+from users.forms import UserForm, UserRouteForm
+from users.models import UserRoute
 from rides.models import Location
 
 
@@ -60,15 +62,37 @@ def register(request):
 
 
 @login_required
-def profile(request):
-    if request.method == 'POST':
-        # TODO: add a new followed route
-        pass
+def list_user_routes(request):
+    return _render_profile(request)
 
-    # TODO: get the followed routes
-    followed_routes = []
+
+@login_required
+def create_user_route(request):
+    if request.method == 'POST':
+        form = UserRouteForm(request.user, request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect(reverse('users:list_user_routes'))
+        else:
+            return _render_profile(request, form)
+
+
+@login_required
+def delete_user_route(request, id):
+    user_route = get_object_or_404(
+        UserRoute, user=request.user, id=id)
+    if request.method == 'POST':
+        user_route.delete()
+    return redirect(reverse('users:list_user_routes'))
+
+
+def _render_profile(request, form=None):
     cities = Location.objects.all()
+    user_routes = UserRoute.objects.filter(user=request.user)
+    if form is None:
+        form = UserRouteForm(request.user)
     return render(request, 'users/profile.html', {
         'cities': cities,
-        'followed_routes': followed_routes,
+        'user_routes': user_routes,
+        'form': form,
     })

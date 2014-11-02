@@ -38,6 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'debug_toolbar.apps.DebugToolbarConfig',
     'djangobower',
+    'bootstrap3',
     'rides',
     'users',
 )
@@ -120,3 +121,9 @@ LOGIN_URL = '/users/login'
 # Application settings
 NEWEST_RIDES = 10
 RIDES_PER_PAGE = 10
+
+# django-bootstrap3 settings
+BOOTSTRAP3 = {
+    'horizontal_label_class': 'col-md-3',
+    'horizontal_field_class': 'col-md-9',
+}
