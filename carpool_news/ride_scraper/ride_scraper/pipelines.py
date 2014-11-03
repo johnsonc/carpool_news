@@ -11,21 +11,27 @@ from rides.models import Route, Location, AdSource
 
 class RideSavingPipeline(object):
     def process_item(self, item, spider):
-        # Ride needs a PK value before using many-to-many relationship
-        item.save()
         # Process raw origin/destination pairs
-        for route_dict in item['routes']:
-            origin = Location.objects.get_or_create(
-                name=route_dict['origin'])
-            destination = Location.objects.get_or_create(
-                name=route_dict['destination'])
-            route = Route.objects.get_or_create(
-                origin=origin,
-                destination=destination)
-            item.instances.routes.add(route)
-        # Save item routes
-        item.save()
-        return item
+        try:
+            for route_dict in item['routes']:
+                origin, created = Location.objects.get_or_create(
+                    name=route_dict['origin'])
+                destination, created = Location.objects.get_or_create(
+                    name=route_dict['destination'])
+                route, created = Route.objects.get_or_create(
+                    origin=origin,
+                    destination=destination)
+                # Ride needs a PK value before using many-to-many relationship
+                item.save()
+                item.instance.routes.add(route)
+                item.save()
+                return item
+        except:
+            if item.instance.pk:
+                # Anything wrong happened after item was saved?
+                item.instance.delete()
+            # Rethrow
+            raise
 
 
 class SetSourcePipeline(object):
