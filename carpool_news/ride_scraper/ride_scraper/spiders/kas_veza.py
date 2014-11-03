@@ -5,7 +5,6 @@ from urlparse import urljoin
 from scrapy.spider import Spider
 from scrapy.http import Request
 from ride_scraper.items import RideItem
-from rides.models import parsed_ad_id, max_scraped_id
 
 
 class KasVezaSpider(Spider):
@@ -14,16 +13,10 @@ class KasVezaSpider(Spider):
     # Required - see SetSourcePipeline
     ad_id_pattern = 'skelbimas/(?P<id>\d+)'
 
-    def __init__(self, *args, **kwargs):
-        super(KasVezaSpider, self).__init__(*args, **kwargs)
-        # Only scrape newest ads, not yet scraped before
-        id = max_scraped_id(KasVezaSpider.name)
-        if id is None:
-            id = 0
-        self.max_scraped_id = id
-
-    # Crawler entry point
     def parse(self, response):
+        """
+        Crawler entry point
+        """
         # Table rows representing different routes
         routes = response.xpath("//tr[@class='rowlink']")
 
@@ -57,23 +50,21 @@ class KasVezaSpider(Spider):
             ride_url = ride.xpath(".//a/@href").extract()[0]
             ride_url = urljoin(response.url, ride_url)
 
-            # Check if this ad is new and not yet scraped
-            id = parsed_ad_id(ride_url, KasVezaSpider.ad_id_pattern)
-            if id > self.max_scraped_id:
-                ride_item = RideItem()
-                # Advertisement creation datetime
-                creation_time_str = ride.xpath(".//a/text()").extract()[0]
-                creation_time_date = arrow.get(creation_time_str)
-                ride_item['creation_time'] = creation_time_date
+            # Begin populating the item now
+            ride_item = RideItem()
+            # Advertisement creation datetime
+            creation_time_str = ride.xpath(".//a/text()").extract()[0]
+            creation_time_date = arrow.get(creation_time_str)
+            ride_item['creation_time'] = creation_time_date
 
-                # Check if ride is being offered or looked for
-                img_src = ride.xpath(".//img/@src").extract()[0]
-                ride_item['is_looking_for'] = "nocar" in img_src
+            # Check if ride is being offered or looked for
+            img_src = ride.xpath(".//img/@src").extract()[0]
+            ride_item['is_looking_for'] = "nocar" in img_src
 
-                yield Request(
-                    url=ride_url,
-                    meta={'ride_item': ride_item},
-                    callback=self.parse_ride)
+            yield Request(
+                url=ride_url,
+                meta={'ride_item': ride_item},
+                callback=self.parse_ride)
 
     def parse_ride(self, response):
         ride_item = response.meta['ride_item']
@@ -137,13 +128,3 @@ class KasVezaSpider(Spider):
             }
         else:
             return {}
-
-    def _get_id_from_url(self, url):
-        """
-        Parse ID from ad url
-        """
-        match = re.search(self.id_pattern, url)
-        if match:
-            return int(match.groupdict()['id'])
-        else:
-            return None

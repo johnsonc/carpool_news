@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
-import re
 import arrow    # datetime parsing
 from urlparse import urljoin
 from scrapy.spider import Spider
 from scrapy.http import Request
 from ride_scraper.items import RideItem
-from rides.models import parsed_ad_id, max_scraped_id
 
 
 class KasVaziuojaSpider(Spider):
@@ -14,16 +12,10 @@ class KasVaziuojaSpider(Spider):
     # Required - see SetSourcePipeline
     ad_id_pattern = 'kelione-(?P<id>\d+)'
 
-    def __init__(self, *args, **kwargs):
-        super(KasVaziuojaSpider, self).__init__(*args, **kwargs)
-        # Only scrape newest ads, not yet scraped before
-        id = max_scraped_id(KasVaziuojaSpider.name)
-        if id is None:
-            id = 0
-        self.max_scraped_id = id
-
-    # Crawler entry point
     def parse(self, response):
+        """
+        Crawler entry point
+        """
         rides = response.xpath("//div[@class='entry black']")
         for ride in rides:
 
@@ -32,25 +24,22 @@ class KasVaziuojaSpider(Spider):
                 "div[@class='photoBox']/a/@href").extract()[0]
             ride_url = urljoin(response.url, ride_url)
 
-            # Get ad ID and check if it's new and not yet scraped
-            id = parsed_ad_id(ride_url, KasVaziuojaSpider.ad_id_pattern)
-            if id > self.max_scraped_id:
-                ride_item = RideItem()
+            # Begin populating the item now
+            ride_item = RideItem()
 
-                # Check if ride is being offered or looked for
-                is_looking_for = ride.xpath(
-                    "div[@class='message']/div/strong/span/text()").extract()[0]
+            # Check if ride is being offered or looked for
+            is_looking_for = ride.xpath(
+                "div[@class='message']/div/strong/span/text()").extract()[0]
+            if is_looking_for == u'Ieškau':
+                ride_item['is_looking_for'] = True
+            elif is_looking_for == u'Siūlau':
+                ride_item['is_looking_for'] = False
 
-                if is_looking_for == u'Ieškau':
-                    ride_item['is_looking_for'] = True
-                elif is_looking_for == u'Siūlau':
-                    ride_item['is_looking_for'] = False
-
-                # Open the ad and scrape the rest of its content
-                yield Request(
-                    url=ride_url,
-                    meta={'ride_item': ride_item},
-                    callback=self.parse_ride)
+            # Open the ad and scrape the rest of its content
+            yield Request(
+                url=ride_url,
+                meta={'ride_item': ride_item},
+                callback=self.parse_ride)
 
     def parse_ride(self, response):
         ride_item = response.meta['ride_item']
@@ -87,13 +76,3 @@ class KasVaziuojaSpider(Spider):
         ride_item['fb_url'] = fb_url
 
         yield ride_item
-
-    def _get_id_from_url(self, url):
-        """
-        Parse ID from ad url
-        """
-        match = re.search(self.id_pattern, url)
-        if match:
-            return int(match.groupdict()['id'])
-        else:
-            return None

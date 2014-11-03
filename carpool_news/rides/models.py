@@ -5,8 +5,13 @@ from arrow_field.model_fields import ArrowField
 
 
 class AdSource(models.Model):
+    # Shorthand name of ad source (i.e. 'kas_veza')
     name = models.CharField(max_length=255)
+
+    # Initial URL of this source (i.e. 'www.kasveza.lt/marsrutai')
     url = models.CharField(max_length=255)
+
+    # Regexp for parsing ad ID from its url
     ad_id_pattern = models.CharField(max_length=255, null=True)
 
 
@@ -25,8 +30,13 @@ class Location(models.Model):
 
 
 class Route(models.Model):
+    # Place of departure
     origin = models.ForeignKey('Location', related_name='origins')
+
+    # Place of arrival
     destination = models.ForeignKey('Location', related_name='destinations')
+
+    # Users interested in (following) this route
     users = models.ManyToManyField(
         User,
         through='users.UserRoute',
@@ -68,24 +78,11 @@ class Ride(models.Model):
     def save(self):
         # Persist parsed ad ID and continue with usual saving
         if self.ad_url and self.ad_source:
-            self.ad_id = parsed_ad_id(
-                self.ad_url,
-                self.ad_source.ad_id_pattern)
+            # Parse ad ID from url
+            match = re.search(
+                self.ad_source.ad_id_pattern,
+                self.ad_url)
+            if match:
+                # Assuming that pattern contains one named group (i.e. 'id')
+                self.ad_id = int(match.groupdict().values()[0])
         super(Ride, self).save()
-
-
-def parsed_ad_id(url, pattern):
-    match = re.search(pattern, url)
-    if match:
-        # Assuming that pattern contains one named group (i.e. 'id')
-        return int(match.groupdict().values()[0])
-    else:
-        return None
-
-
-def max_scraped_id(source_name):
-    """Latest scraped ad ID from given source
-    """
-    return Ride.objects\
-        .filter(ad_source__name=source_name)\
-        .aggregate(models.Max('ad_id'))['ad_id__max']
