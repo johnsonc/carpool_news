@@ -6,7 +6,7 @@
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
 from django.core.exceptions import ObjectDoesNotExist
-from rides.models import Route, AdSource
+from rides.models import Route, Location, AdSource
 
 
 class RideSavingPipeline(object):
@@ -15,19 +15,14 @@ class RideSavingPipeline(object):
         item.save()
         # Process raw origin/destination pairs
         for route_dict in item['routes']:
-            origin = route_dict['origin']
-            destination = route_dict['destination']
-            # Get existing route
-            try:
-                db_route = Route.objects.get(
-                    origin=origin,
-                    destination=destination)
-                item.instance.routes.add(db_route)
-            # Or create new one
-            except ObjectDoesNotExist:
-                item.instance.routes.create(
-                    origin=origin,
-                    destination=destination)
+            origin = Location.objects.get_or_create(
+                name=route_dict['origin'])
+            destination = Location.objects.get_or_create(
+                name=route_dict['destination'])
+            route = Route.objects.get_or_create(
+                origin=origin,
+                destination=destination)
+            item.instances.routes.add(route)
         # Save item routes
         item.save()
         return item
