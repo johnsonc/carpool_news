@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load bootstrap3 %}
 
 {% block content %}
 <!-- LEFT -->
@@ -11,38 +12,10 @@
         </div>
         <div class="panel-body">
             <form action="" method="GET" role="form">
-                <datalist id="city-options">
-                    {% for city in city_options %}
-                        <option>
-                            {{ city.name }}
-                        </option>
-                    {% endfor %}
-                </datalist>
-                <!-- Origin -->
-                <div class="form-group">
-                    <label for="input-origin" class="control-label" id="label-from">Važiuoja iš:</label>
-                    <input type="text" name="from" id="input-origin" class="form-control input-sm" value="{{ selected_origin }}" required="required" list="city-options" autocomplete="on">
-                </div>
-                <!-- Destination -->
-                <div class="form-group">
-                    <label for="input-origin" class="control-label" id="label-to">Važiuoja į:</label>
-                    <input type="text" name="to" id="input-destination" class="form-control input-sm" value="{{ selected_destination }}" required="required" list="city-options" autocomplete="on">
-                </div>
-                <div class="form-group">
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="looking-for" id="is-looking-for-true" value="True" {{ selected_looking_for|yesno:'checked="checked",,checked="checked"' }}>
-                            Ieškau
-                        </label>
-                    </div>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="looking-for" id="is-looking-for-false" value="False" {{ selected_looking_for|yesno:',checked="checked",' }}>
-                            Siūlau
-                        </label>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary">Ieškoti</button>
+                {% bootstrap_form form %}
+                {% buttons %}
+                    <button type="submit" class="btn btn-primary">Ieškoti</button>
+                {% endbuttons %}
             </form>
         </div>
     </div>

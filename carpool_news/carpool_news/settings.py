@@ -126,4 +126,6 @@ RIDES_PER_PAGE = 10
 BOOTSTRAP3 = {
     'horizontal_label_class': 'col-md-3',
     'horizontal_field_class': 'col-md-9',
+    # Do not add 'has-success' class on sucessfully submitted forms
+    'success_css_class': '',
 }
