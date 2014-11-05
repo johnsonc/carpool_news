@@ -67,13 +67,17 @@ class Ride(models.Model):
     ad_id = models.IntegerField(null=True)
 
     # Site from which this ride was scraped
-    ad_source = models.ForeignKey(AdSource, null=True)
+    ad_source = models.ForeignKey(AdSource, null=True, related_name='rides')
 
     # Author's contact phone number
     phone = models.CharField(max_length=30, null=True)
 
     # Origin and destination cities of this ride
     routes = models.ManyToManyField(Route)
+
+    # Indicates if this ad is not valid anymore and could possibly
+    # be deleted/archived
+    is_expired = models.BooleanField(default=False)
 
     def save(self):
         # Persist parsed ad ID and continue with usual saving

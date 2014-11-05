@@ -13,13 +13,15 @@ def index(request):
         rides = Ride.objects.filter(
             routes__origin=form.origin_value,
             routes__destination=form.destination_value,
-            is_looking_for=form.is_looking_for_value)
+            is_looking_for=form.is_looking_for_value,
+            is_expired=False)
         search_done = True
     else:
         # Populate with initial values otherwise
         form = SearchForm()
         # Display few newest ads
-        rides = Ride.objects.order_by('-id')[:NEWEST_RIDES]
+        rides = Ride.objects.filter(
+            is_expired=False).order_by('-id')[:NEWEST_RIDES]
         search_done = False
 
     return render(request, 'rides/index.html', {

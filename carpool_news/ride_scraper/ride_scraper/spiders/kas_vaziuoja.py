@@ -12,6 +12,16 @@ class KasVaziuojaSpider(Spider):
     # Required - see SetSourcePipeline
     ad_id_pattern = 'kelione-(?P<id>\d+)'
 
+    def is_expired(self, db_item, scraped_items):
+        """
+        Ad is expired if its ride date is already in the past
+        """
+        now = arrow.utcnow()
+        if db_item.ride_date < now:
+            return True
+        else:
+            return False
+
     def parse(self, response):
         """
         Crawler entry point

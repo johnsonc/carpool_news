@@ -13,6 +13,21 @@ class KasVezaSpider(Spider):
     # Required - see SetSourcePipeline
     ad_id_pattern = 'skelbimas/(?P<id>\d+)'
 
+    def is_expired(self, db_item, scraped_items):
+        """
+        Ad is expired if it's in DB but not in newly scraped items
+        """
+        try:
+            next(
+                item for item in scraped_items
+                if db_item.ad_url == item['ad_url']
+            )
+            # Item exists both in DB and scraped results, so not yet expired
+            return False
+        except StopIteration:
+            # Not in the scraped results
+            return True
+
     def parse(self, response):
         """
         Crawler entry point

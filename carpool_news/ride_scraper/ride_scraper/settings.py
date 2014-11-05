@@ -14,8 +14,9 @@ SPIDER_MODULES = ['ride_scraper.spiders']
 NEWSPIDER_MODULE = 'ride_scraper.spiders'
 
 ITEM_PIPELINES = {
-    'ride_scraper.pipelines.CheckExistingPipeline': 1,
-    'ride_scraper.pipelines.RideSavingPipeline': 2,
+    'ride_scraper.pipelines.CheckExpiredPipeline': 1,
+    'ride_scraper.pipelines.CheckExistingPipeline': 2,
+    'ride_scraper.pipelines.RideSavingPipeline': 3,
 }
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
