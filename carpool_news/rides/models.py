@@ -73,7 +73,7 @@ class Ride(models.Model):
     phone = models.CharField(max_length=30, null=True)
 
     # Origin and destination cities of this ride
-    routes = models.ManyToManyField(Route)
+    routes = models.ManyToManyField(Route, related_name='rides')
 
     # Indicates if this ad is not valid anymore and could possibly
     # be deleted/archived

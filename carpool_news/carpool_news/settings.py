@@ -129,3 +129,9 @@ BOOTSTRAP3 = {
     # Do not add 'has-success' class on sucessfully submitted forms
     'success_css_class': '',
 }
+
+# Mailgun configuration
+MAIL_API_URL = 'https://api.mailgun.net/v2/sandboxf55c93f91bc9469b9b5e1817832f1ee7.mailgun.org/messages'
+MAIL_API_KEY = 'key-ace37b47312c34bad12f63cb1cdc468d'
+MAIL_FROM = 'Carpool News <mailer@carpoolnews-tomasra.rhcloud.com>'
+MAIL_SUBJECT = 'Nauji skelbimai'
