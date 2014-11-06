@@ -30,7 +30,7 @@
         <nav class="navbar navbar-inverse">
             <a class="navbar-brand">Carpool News</a>
             <ul class="nav navbar-nav navbar-left">
-                <li class="active">
+                <li class="{% block navbar-class-index %}{% endblock %}">
                     <a href="{% url 'rides:index' %}">
                         Skelbimai
                     </a>
@@ -38,7 +38,7 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 {% if user.is_authenticated %}
-                <li>
+                <li class="{% block navbar-class-user %}{% endblock %}">
                     <a href="{% url 'users:list_user_routes' %}">
                         {{ user.username }}
                     </a>
@@ -49,12 +49,12 @@
                     </a>
                 </li>
                 {% else %}
-                <li>
+                <li class="{% block navbar-class-register %}{% endblock %}">
                     <a href="{% url 'users:register' %}">
                         Registruotis
                     </a>
                 </li>
-                <li>
+                <li class="{% block navbar-class-login %}{% endblock %}">
                     <a href="{% url 'users:login' %}">
                         Prisijungti
                     </a>

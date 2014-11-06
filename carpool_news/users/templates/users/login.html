@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 
+{% block navbar-class-login %}
+active
+{% endblock %}
+
 {% block content %}
 <div class="col-sm-6">
     <form action="{% url 'users:login' %}" method="POST" class="form-horizontal" role="form">
