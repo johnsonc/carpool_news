@@ -27,7 +27,6 @@ def index(request):
     return render(request, 'rides/index.html', {
         'search_done': search_done,
         'form': form,
-        'city_options': Location.objects.all(),
         'rides': rides,
         'rides_per_page': RIDES_PER_PAGE,
         'ride_pages': math.ceil(float(len(rides)) / RIDES_PER_PAGE),

@@ -8,11 +8,11 @@ class SearchForm(forms.Form):
     origin = forms.ModelChoiceField(
         label='Važiuoja iš',
         initial=None,
-        queryset=Location.objects.all())
+        queryset=Location.objects.order_by('name').all())
     destination = forms.ModelChoiceField(
         label='Važiuoja į',
         initial=None,
-        queryset=Location.objects.all())
+        queryset=Location.objects.order_by('name').all())
     is_looking_for = forms.BooleanField(
         initial=False,
         required=False,
