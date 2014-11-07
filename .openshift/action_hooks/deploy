@@ -7,6 +7,9 @@
 echo "---> ACTION HOOK: deploy <---"
 source $OPENSHIFT_HOMEDIR/python/virtenv/bin/activate
 
+# Set WSGI entry point
+export OPENSHIFT_PYTHON_WSGI_APPLICATION=${OPENSHIFT_REPO_DIR}/carpool_news/carpool_news/wsgi.py
+
 echo "Executing 'python $OPENSHIFT_REPO_DIR/carpool_news/manage.py migrate --noinput'"
 python "$OPENSHIFT_REPO_DIR"/carpool_news/manage.py migrate --noinput
 
