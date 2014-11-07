@@ -13,5 +13,8 @@ export OPENSHIFT_PYTHON_WSGI_APPLICATION=${OPENSHIFT_REPO_DIR}/carpool_news/carp
 echo "Executing 'python $OPENSHIFT_REPO_DIR/carpool_news/manage.py migrate --noinput'"
 python "$OPENSHIFT_REPO_DIR"/carpool_news/manage.py migrate --noinput
 
+echo "Executing 'python $OPENSHIFT_REPO_DIR/carpool_news/manage.py bower_install'"
+python "$OPENSHIFT_REPO_DIR"/carpool_news/manage.py bower_install
+
 echo "Executing 'python $OPENSHIFT_REPO_DIR/carpool_news/manage.py collectstatic --noinput'"
 python "$OPENSHIFT_REPO_DIR"/carpool_news/manage.py collectstatic --noinput
