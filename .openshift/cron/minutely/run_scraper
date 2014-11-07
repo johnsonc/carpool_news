@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Run every 30 minutes
+minute=$(date +%M)
+if [ $(($minute % 30)) -eq 0 ]; then
+    cd $OPENSHIFT_REPO_DIR/carpool_news/ride_scraper
+    scrapy crawl kas_vaziuoja
+    scrapy crawl kas_veza
+fi
