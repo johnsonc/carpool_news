@@ -47,7 +47,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'debug_toolbar.apps.DebugToolbarConfig',
-    'djangobower',
     'bootstrap3',
     'rides',
     'users',
@@ -124,7 +123,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, '..', 'wsgi', 'static')
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'djangobower.finders.BowerFinder',
 )
 
 STATICFILES_DIRS = (
@@ -135,12 +133,6 @@ STATICFILES_DIRS = (
 TEMPLATE_PATH = os.path.join(BASE_DIR, 'templates')
 TEMPLATE_DIRS = (
     TEMPLATE_PATH,
-)
-
-# Bower package manager
-BOWER_COMPONENTS_ROOT = os.path.join(BASE_DIR, 'components')
-BOWER_INSTALLED_APPS = (
-    'jquery-bootpag',
 )
 
 LOGIN_URL = '/users/login'
