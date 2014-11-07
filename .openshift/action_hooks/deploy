@@ -8,7 +8,12 @@ echo "---> ACTION HOOK: deploy <---"
 source $OPENSHIFT_HOMEDIR/python/virtenv/bin/activate
 
 # Set WSGI entry point
-export OPENSHIFT_PYTHON_WSGI_APPLICATION=${OPENSHIFT_REPO_DIR}/carpool_news/carpool_news/wsgi.py
+# export OPENSHIFT_PYTHON_WSGI_APPLICATION='carpool_news/carpool_news/wsgi.py'
+# echo "Environment variable set: OPENSHIFT_PYTHON_WSGI_APPLICATION=$OPENSHIFT_PYTHON_WSGI_APPLICATION"
+
+# Setting above env var does not work, create symlink instead
+ln -sf ${OPENSHIFT_REPO_DIR}carpool_news/carpool_news/wsgi.py ${OPENSHIFT_REPO_DIR}wsgi.py
+
 
 echo "Executing 'python $OPENSHIFT_REPO_DIR/carpool_news/manage.py migrate --noinput'"
 python "$OPENSHIFT_REPO_DIR"/carpool_news/manage.py migrate --noinput
