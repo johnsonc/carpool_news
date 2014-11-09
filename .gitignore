@@ -67,5 +67,6 @@ target/
 ###Custom###
 venv/
 temp/
+test/
 carpool_news/components
 *.sqlite3
